@@ -1,9 +1,7 @@
-// Spotify.js
 const clientId = 'cfb8b8d074a141debac26e9b4ac44e4f';
-const redirectUri = 'http://127.0.0.1:5173/'; // Тот же, что в Spotify Dashboard
+const redirectUri = 'http://127.0.0.1:5173/'; 
 let accessToken = null;
 
-// Генератор случайной строки для PKCE
 function generateRandomString(length) {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let result = '';
@@ -11,7 +9,6 @@ function generateRandomString(length) {
   return result;
 }
 
-// Генерация code challenge для PKCE
 async function generateCodeChallenge(codeVerifier) {
   const encoder = new TextEncoder();
   const data = encoder.encode(codeVerifier);
@@ -28,7 +25,7 @@ const Spotify = {
     const codeChallenge = await generateCodeChallenge(codeVerifier);
     localStorage.setItem('code_verifier', codeVerifier);
 
-    const scope = 'playlist-modify-public';
+        const scope = 'playlist-modify-public playlist-modify-private playlist-read-private';
     const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(
       redirectUri
     )}&scope=${encodeURIComponent(scope)}&code_challenge_method=S256&code_challenge=${codeChallenge}`;
@@ -66,7 +63,7 @@ const Spotify = {
     const code = params.get('code');
     if (code && !accessToken) {
       await this.fetchAccessToken(code);
-      window.history.replaceState({}, document.title, '/'); // убираем ?code= из URL
+      window.history.replaceState({}, document.title, '/'); 
     }
   },
 
@@ -97,6 +94,67 @@ const Spotify = {
       return [];
     }
   },
+
+    async getUserPlaylists() {
+    if (!accessToken) {
+      alert('Please login to Spotify first!');
+      return [];
+    }
+
+    try {
+      const response = await fetch('https://api.spotify.com/v1/me/playlists', {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+
+      if (!response.ok) {
+        console.error('Spotify get playlists error:', response.status, response.statusText);
+        return [];
+      }
+
+      const jsonResponse = await response.json();
+      if (!jsonResponse.items) return [];
+
+      return jsonResponse.items.map(playlist => ({
+        id: playlist.id,
+        name: playlist.name,
+        tracksTotal: playlist.tracks?.total ?? 0,
+        uri: playlist.uri,
+      }));
+    } catch (error) {
+      console.error('Spotify fetch error:', error);
+      return [];
+    }
+  },
+
+  async addTrackToPlaylist(playlistId, trackUri) {
+    if (!accessToken) {
+      alert('Please login to Spotify first!');
+      return false;
+    }
+
+    try {
+      const response = await fetch(`https://api.spotify.com/v1/playlists/${encodeURIComponent(playlistId)}/tracks`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ uris: [trackUri] }),
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        console.error('Failed to add track to playlist:', response.status, response.statusText, text);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Spotify add track error:', error);
+      return false;
+    }
+  },
+
 };
 
 export default Spotify;
