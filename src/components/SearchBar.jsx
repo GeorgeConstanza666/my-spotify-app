@@ -1,20 +1,22 @@
 import React, { useState } from 'react';
 
-function SearchBar() {
+function SearchBar({ onSearch }) {
 
     const [userInput, setUserInput] = useState('');
 
-     function handleUserInput(e) {
-    setUserInput(e.target.value);
+     function handleSubmit(e) {
+        e.preventDefault();
+        setUserInput(e.target.value);
   }
 
     return (
         <div>
-            <form>
+            <form onSubmit={handleSubmit}>
                 <label for="searchbar">SearchBar</label>
-                <br></br>
-                <input id="searchbar" type="text" placeholder="Enter A Song, Album, or Artist" onChange={handleUserInput} value={userInput}/>
-                <br></br>
+                <br />
+                <input id="searchbar" type="text" placeholder="Enter A Song, Album, or Artist" onChange={(e) => setUserInput(e.target.value)}
+          value={userInput}/>
+                <br />
                 <button type="sumbit">Search</button>
             </form>
         </div>

@@ -8,12 +8,19 @@ import Track from './components/Track'
 
 function App() {
 
+  const [searchResults, setSearchResults] = useState([]);
+
+  async function searchSpotify(term) {
+    const results = await Spotify.search(term);
+    setSearchResults(results);
+  }
+
   return (
     <div>
       <h1>Spotify Playlist Builder 🎵</h1>
-      <SearchBar />
+      <SearchBar onSearch={searchSpotify}/>
       <div className="App-content">
-        <SearchResults />
+        <SearchResults  tracks={searchResults}/>
         <Playlist />
       </div>
     </div>
