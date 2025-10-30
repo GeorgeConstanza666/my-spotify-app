@@ -57,7 +57,7 @@ function App() {
 
   return (
     <div className="app">
-      <h1>Spotify Playlist Builder 🎵</h1>
+      <h1>Spotify сhina/hueta</h1>
 
       <button onClick={() => Spotify.login()}>Login to Spotify</button>
 
