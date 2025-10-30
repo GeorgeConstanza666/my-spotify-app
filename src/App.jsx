@@ -1,6 +1,4 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 import Playlist from './components/Playlist' 
 import SearchBar from './components/SearchBar'
@@ -9,7 +7,7 @@ import Tracklist from './components/Tracklist'
 import Track from './components/Track'
 
 function App() {
-  
+
   return (
     <div>
       <h1>Spotify Playlist Builder 🎵</h1>
