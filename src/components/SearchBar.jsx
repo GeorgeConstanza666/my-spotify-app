@@ -1,26 +1,24 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 function SearchBar({ onSearch }) {
+  const [userInput, setUserInput] = useState('');
 
-    const [userInput, setUserInput] = useState('');
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (userInput.trim() !== '') onSearch(userInput);
+  };
 
-     function handleSubmit(e) {
-        e.preventDefault();
-        setUserInput(e.target.value);
-  }
-
-    return (
-        <div>
-            <form onSubmit={handleSubmit}>
-                <label for="searchbar">SearchBar</label>
-                <br />
-                <input id="searchbar" type="text" placeholder="Enter A Song, Album, or Artist" onChange={(e) => setUserInput(e.target.value)}
-          value={userInput}/>
-                <br />
-                <button type="sumbit">Search</button>
-            </form>
-        </div>
-    );
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        placeholder="Enter a song, album, or artist"
+        value={userInput}
+        onChange={(e) => setUserInput(e.target.value)}
+      />
+      <button type="submit">Search</button>
+    </form>
+  );
 }
 
 export default SearchBar;

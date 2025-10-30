@@ -1,30 +1,30 @@
-import { useState } from 'react'
-import './App.css'
-import Playlist from './components/Playlist' 
-import SearchBar from './components/SearchBar'
-import SearchResults from './components/SearchResults'
-import Tracklist from './components/Tracklist'
-import Track from './components/Track'
+import { useState, useEffect } from 'react';
+import './App.css';
+import SearchBar from './components/SearchBar';
+import SearchResults from './components/SearchResults';
+import Spotify from './Spotify';
 
 function App() {
-
   const [searchResults, setSearchResults] = useState([]);
 
-  async function searchSpotify(term) {
+  useEffect(() => {
+    // Проверяем, есть ли код от Spotify после редиректа
+    Spotify.handleRedirect();
+  }, []);
+
+  const handleSearch = async (term) => {
     const results = await Spotify.search(term);
     setSearchResults(results);
-  }
+  };
 
   return (
     <div>
       <h1>Spotify Playlist Builder 🎵</h1>
-      <SearchBar onSearch={searchSpotify}/>
-      <div className="App-content">
-        <SearchResults  tracks={searchResults}/>
-        <Playlist />
-      </div>
+      <button onClick={() => Spotify.login()}>Login to Spotify</button>
+      <SearchBar onSearch={handleSearch} />
+      <SearchResults tracks={searchResults} />
     </div>
   );
 }
 
-export default App
+export default App;
